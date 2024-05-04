@@ -1,20 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { SQLiteProvider } from "expo-sqlite/next";
+import { initializeDB } from "./utils/Database";
+import { TasksProvider } from "./contexts/TasksContext";
+import { Stack } from "./utils/Navigation";
+import Home from "./pages/Home";
+import TaskForm from "./pages/TaskForm";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SQLiteProvider databaseName="tasks.db" onInit={initializeDB}>
+      <TasksProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{ title: "Tasks" }}
+            />
+            <Stack.Screen
+              name="TaskForm"
+              component={TaskForm}
+              options={{ title: "Task Form" }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </TasksProvider>
+    </SQLiteProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

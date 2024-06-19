@@ -33,6 +33,8 @@ export default ({
       <View style={Styles.listItemContent}>
         <CheckBox style={Styles.listItemCheckBox} onChecked={onChecked} />
         <Text style={Styles.text}>{item.name}</Text>
+        <Text style={Styles.text}>{item.category}</Text>
+        <Text style={Styles.text}>{item.date?.toString()}</Text>
       </View>
       <TouchableWithoutFeedback onPressIn={drag}>
         <Svg viewBox="0 0 100 100" style={Styles.listItemDragButton}>

@@ -78,4 +78,34 @@ export default StyleSheet.create({
     borderColor: "gray",
     paddingHorizontal: 8,
   },
+  dropdown: {
+    backgroundColor: "#ffffff",
+    borderColor: "#575757",
+    borderWidth: 1,
+    paddingVertical: 0,
+    paddingHorizontal: 10,
+    minWidth: 200
+  },
+  newCategoryModal: {
+    flex: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%",
+    height: "60%",
+    backgroundColor: "#ffffff",
+    borderRadius: 5,
+    alignSelf: "center",
+    marginVertical: "auto",
+    gap: 40,
+    padding: 15
+  },
+  controlGroup: {
+    flex: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: 12,
+    gap: 12,
+  }
 });

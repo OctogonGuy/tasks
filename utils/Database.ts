@@ -1,5 +1,5 @@
 import { type SQLiteDatabase } from "expo-sqlite/next";
-import { ListTask, Task } from "./Models";
+import {Category, ListTask, Task} from "./Models";
 
 /**
  * Initializes task database if not created
@@ -7,7 +7,7 @@ import { ListTask, Task } from "./Models";
 export async function initializeDB(db: SQLiteDatabase) {
   try {
     await db.runAsync(`
-      CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY, name TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT, date DATE);
     `);
   } catch (e) {
     console.log(e);
@@ -22,7 +22,15 @@ export async function initializeDB(db: SQLiteDatabase) {
  */
 export async function addTask(db: SQLiteDatabase, taskInfo: any, ...names: string[]) {
   try {
-    await db.runAsync(`INSERT INTO tasks (name) VALUES ('${taskInfo.name}');`);
+    await db.runAsync(`
+    INSERT INTO tasks 
+        (name
+            ${taskInfo.category ? ", category" : ""}
+            ${taskInfo.date ? ", date" : ""})
+    VALUES
+        ('${taskInfo.name}'
+            ${taskInfo.category ? ", '" + taskInfo.category + "'" : ""}
+            ${taskInfo.date ? ", " + taskInfo.date.toISOString().split('T')[0] : ""});`);
     const result = await db.getFirstAsync<any>(`SELECT id FROM tasks WHERE id = (SELECT max(id) FROM tasks);`);
     const id = result.id;
     for (const name of names) {
@@ -43,9 +51,9 @@ export async function addTask(db: SQLiteDatabase, taskInfo: any, ...names: strin
 export async function updateTask(db: SQLiteDatabase, id: number, taskInfo: any) {
   let task: Task | null = null;
   try {
-    await db.runAsync(
-      `UPDATE tasks SET name = '${taskInfo.name}' where id = ${id};`
-    );
+    await db.runAsync(`UPDATE tasks SET name = '${taskInfo.name}' where id = ${id};`);
+    await db.runAsync(`UPDATE tasks SET category = '${taskInfo.category}' where id = ${id};`);
+    await db.runAsync(`UPDATE tasks SET date = '${taskInfo.date}' where id = ${id};`);
     task = await db.getFirstAsync<Task>(`SELECT * FROM tasks WHERE id = ${id};`);
   } catch (e) {
     console.log(e);
@@ -196,9 +204,33 @@ export async function getTasks(
     const listTasks = result.sort((a, b) => a.list_index - b.list_index);
     const tasks: Task[] = [];
     for (const task of listTasks) {
-      tasks.push({id: task.id, name: task.name});
+      tasks.push({id: task.id, name: task.name, category: task.category, date: task.date});
     }
     callback(tasks);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+/**
+ * Loads the task categories into the context
+ * @param db The database
+ * @param callback The function to execute using the database contents
+ */
+export async function getCategories(
+  db: SQLiteDatabase,
+  callback: (tasks: Category[]) => void
+) {
+  try {
+    const result = await db.getAllAsync<ListTask>(`SELECT * FROM tasks;`);
+    const categories: Map<string, Category> = new Map();
+    for (const task of result) {
+      if (!categories.has(task.category)) {
+        categories.set(task.category, {name: task.category, num_tasks: 0});
+      }
+      categories.get(task.category)!.num_tasks += 1;
+    }
+    callback(Array.from(categories.values()));
   } catch (e) {
     console.log(e);
   }

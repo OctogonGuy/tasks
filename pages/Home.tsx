@@ -25,10 +25,13 @@ export default ({ route, navigation }: HomeProps) => {
   const { tasks, setTasks } = useContext(TasksContext);
 
   useEffect(() => {
-    // Create home list table if not created already
-    createListIndexTable(db, "home");
-    // Get tasks from database
-    getTasks(db, "home", setTasks);
+    async function initializeTasks() {
+      // Create home list table if not created already
+      await createListIndexTable(db, "home");
+      // Get tasks from database
+      await getTasks(db, "home", setTasks);
+    }
+    initializeTasks();
   }, []);
 
   const renderItem = (item: Task, drag: () => void, isActive: boolean) => {

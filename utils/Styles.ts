@@ -16,6 +16,9 @@ export default StyleSheet.create({
   text: {
     fontSize: 14,
   },
+  subtext: {
+    color: "gray"
+  },
   list: {
   },
   listSeparator: {
@@ -32,9 +35,9 @@ export default StyleSheet.create({
   listItemContent: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 14
   },
   listItemCheckBox: {
-    marginRight: 14,
     padding: 9,
     borderColor: "black",
   },
@@ -76,7 +79,8 @@ export default StyleSheet.create({
     width: "100%",
     borderWidth: 1,
     borderColor: "gray",
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4
   },
   dropdown: {
     backgroundColor: "#ffffff",
@@ -84,14 +88,14 @@ export default StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 0,
     paddingHorizontal: 10,
-    minWidth: 200
+    minWidth: 175
   },
   newCategoryModal: {
     flex: 0,
     alignItems: "center",
     justifyContent: "center",
-    width: "80%",
-    height: "60%",
+    width: "75%",
+    height: 200,
     backgroundColor: "#ffffff",
     borderRadius: 5,
     alignSelf: "center",
@@ -101,11 +105,22 @@ export default StyleSheet.create({
   },
   controlGroup: {
     flex: 0,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: 12,
+    gap: 12,
+    marginVertical: 20
+  },
+  subdivision: {
+    flex: 0,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
     paddingHorizontal: 12,
     gap: 12,
+    marginVertical: 2
   }
 });

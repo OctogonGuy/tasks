@@ -35,9 +35,7 @@ export default ({ route, navigation }: TaskFormProps) => {
     async function loadCategories() {
       await getCategories(db, setCategories);
     }
-    loadCategories().then(() => {
-      setCategories(categories);
-    });
+    loadCategories();
   }, []);
 
   // Validate form fields on any change
@@ -54,19 +52,19 @@ export default ({ route, navigation }: TaskFormProps) => {
 
   return (
     <View style={Styles.container}>
-      <View style={Styles.form}>
-        <Modal
-          visible={showNewCategoryModal}
-          transparent={true}
-          animationType="slide"
-        >
+      <Modal
+        visible={showNewCategoryModal}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <View style={Styles.newCategoryModal}>
             <TextInput
               style={[Styles.textInput, Styles.text]}
               placeholder={"Category name"}
               onChangeText={setCategoryName}
             />
-            <View style={Styles.controlGroup}>
+            <View style={Styles.subdivision}>
               <Button
                 title="Create"
                 onPress={() => {
@@ -81,49 +79,65 @@ export default ({ route, navigation }: TaskFormProps) => {
               />
             </View>
           </View>
-        </Modal>
-        <TextInput
-          style={[Styles.textInput, Styles.text]}
-          placeholder={"Task name"}
-          onChangeText={setTaskName}
-          defaultValue={taskName}
-        />
+        </View>
+      </Modal>
+      <View style={Styles.form}>
         <View style={Styles.controlGroup}>
-          <Text>Category:</Text>
-          <Dropdown
-            style={Styles.dropdown}
-            data={categories!.map(function (category: Category) {
-              return { label: category.name, value: category };
-            })}
-            labelField="label"
-            valueField="value"
-            placeholder={taskCategory}
-            onChange={(item) => {
-              setTaskCategory(item.value.name);
-            }}
-          />
-          <Button
-            title="New"
-            onPress={() => setShowNewCategoryModal(true)}
-          />
-          <Button
-            title="Clear"
-            onPress={() => setTaskCategory(undefined)}
-          />
+          <View style={Styles.subdivision}>
+            <TextInput
+              style={[Styles.textInput, Styles.text]}
+              placeholder={"Task name"}
+              onChangeText={setTaskName}
+              defaultValue={taskName}
+            />
+          </View>
         </View>
         <View style={Styles.controlGroup}>
-          <Text>Scheduled date: {taskDate?.toString()}</Text>
-          <Button
-            title="Pick"
-            onPress={() => setShowDateTimePicker(true)}
-          />
-          <Button
-            title="Clear"
-            onPress={() => setTaskDate(undefined)}
-          />
+          <View style={Styles.subdivision}>
+            <Text>Category:</Text>
+            <Dropdown
+              style={Styles.dropdown}
+              data={categories!.map(function (category: Category) {
+                return { label: category.name, value: category };
+              })}
+              labelField="label"
+              valueField="value"
+              placeholder={taskCategory}
+              placeholderStyle={Styles.text}
+              selectedTextStyle={Styles.text}
+              onChange={(item) => {
+                setTaskCategory(item.value.name);
+              }}
+            />
+          </View>
+          <View style={Styles.subdivision}>
+            <Button
+              title="New category"
+              onPress={() => setShowNewCategoryModal(true)}
+            />
+            <Button
+              title="Clear"
+              onPress={() => setTaskCategory(undefined)}
+            />
+          </View>
+        </View>
+        <View style={Styles.controlGroup}>
+          <View style={Styles.subdivision}>
+            <Text>Scheduled date: {taskDate ? new Date(taskDate).toDateString() : "None"}</Text>
+          </View>
+          <View style={Styles.subdivision}>
+            <Button
+              title="Pick"
+              onPress={() => setShowDateTimePicker(true)}
+            />
+            <Button
+              title="Clear"
+              onPress={() => setTaskDate(undefined)}
+            />
+          </View>
           {showDateTimePicker && <RNDateTimePicker
             mode="date"
-            value={taskDate?? new Date()}
+            value={taskDate ? new Date(taskDate) : new Date()}
             onChange={(e, date) => {
               setShowDateTimePicker(false);
               setTaskDate(date?? new Date());

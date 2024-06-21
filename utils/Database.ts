@@ -30,7 +30,7 @@ export async function addTask(db: SQLiteDatabase, taskInfo: any, ...names: strin
     VALUES
         ('${taskInfo.name}'
             ${taskInfo.category ? ", '" + taskInfo.category + "'" : ""}
-            ${taskInfo.date ? ", " + taskInfo.date.toISOString().split('T')[0] : ""});`);
+            ${taskInfo.date ? ", '" + taskInfo.date + "'": ""});`);
     const result = await db.getFirstAsync<any>(`SELECT id FROM tasks WHERE id = (SELECT max(id) FROM tasks);`);
     const id = result.id;
     for (const name of names) {
@@ -52,8 +52,14 @@ export async function updateTask(db: SQLiteDatabase, id: number, taskInfo: any) 
   let task: Task | null = null;
   try {
     await db.runAsync(`UPDATE tasks SET name = '${taskInfo.name}' where id = ${id};`);
-    await db.runAsync(`UPDATE tasks SET category = '${taskInfo.category}' where id = ${id};`);
-    await db.runAsync(`UPDATE tasks SET date = '${taskInfo.date}' where id = ${id};`);
+    if (taskInfo.category)
+      await db.runAsync(`UPDATE tasks SET category = '${taskInfo.category}' where id = ${id};`);
+    else
+      await db.runAsync(`UPDATE tasks SET category = NULL where id = ${id};`);
+    if (taskInfo.date)
+      await db.runAsync(`UPDATE tasks SET date = '${taskInfo.date}' where id = ${id};`);
+    else
+      await db.runAsync(`UPDATE tasks SET date = NULL where id = ${id};`);
     task = await db.getFirstAsync<Task>(`SELECT * FROM tasks WHERE id = ${id};`);
   } catch (e) {
     console.log(e);
@@ -225,6 +231,7 @@ export async function getCategories(
     const result = await db.getAllAsync<ListTask>(`SELECT * FROM tasks;`);
     const categories: Map<string, Category> = new Map();
     for (const task of result) {
+      if (!task.category) return;
       if (!categories.has(task.category)) {
         categories.set(task.category, {name: task.category, num_tasks: 0});
       }
